@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Iniciar Sesión</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <!-- Username -->
+        <ion-item>
+          <ion-label position="floating">Username</ion-label>
+          <ion-input
+            [(ngModel)]="username"
+            (ionInput)="validateInputs()"
+            type="text"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <!-- Password -->
+        <ion-item>
+          <ion-label position="floating">Password</ion-label>
+          <ion-input
+            [(ngModel)]="password"
+            (ionInput)="validateInputs()"
+            type="password"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <!-- Botón -->
+        <ion-button expand="full" [disabled]="!isValid" (click)="openModal()">
+          Mostrar Información
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- MODAL -->
+  <ion-modal [(isOpen)]="showModal">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Información ingresada</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <p><strong>Username:</strong> {{ username }}</p>
+      <p><strong>Password:</strong> {{ password }}</p>
+      <ion-button expand="full" (click)="closeModal()">Cerrar</ion-button>
+    </ion-content>
+  </ion-modal>
+</ion-content>
