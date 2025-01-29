@@ -30,8 +30,13 @@
           ></ion-input>
         </ion-item>
 
-        <!-- Botón -->
-        <ion-button expand="full" [disabled]="!isValid" (click)="openModal()">
+        <!-- Botón Iniciar Sesión -->
+        <ion-button expand="full" [disabled]="!isValid" (click)="iniciarSesion()">
+          Iniciar Sesión
+        </ion-button>
+
+        <!-- Botón Mostrar Información en Modal -->
+        <ion-button expand="full" color="secondary" [disabled]="!isValid" (click)="openModal()">
           Mostrar Información
         </ion-button>
       </ion-col>
@@ -39,7 +44,7 @@
   </ion-grid>
 
   <!-- MODAL -->
-  <ion-modal [(isOpen)]="showModal">
+  <ion-modal [isOpen]="showModal">
     <ion-header>
       <ion-toolbar>
         <ion-title>Información ingresada</ion-title>
