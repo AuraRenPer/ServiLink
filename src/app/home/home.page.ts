@@ -15,15 +15,13 @@ export class HomePage {
 
   constructor(private alertCtrl: AlertController) {}
 
-  // Validar inputs
   validateInputs() {
-    this.username = this.username.toLowerCase(); // Convertir a minúsculas
+    this.username = this.username.toLowerCase(); 
     const usernameValid = this.username.trim().length > 0 && !/\s/.test(this.username);
     const passwordValid = this.password.trim().length > 0 && !/\s/.test(this.password);
     this.isValid = usernameValid && passwordValid;
   }
 
-  // Función para iniciar sesión
   async iniciarSesion() {
     if (this.isValid) {
       const alert = await this.alertCtrl.create({
@@ -42,12 +40,10 @@ export class HomePage {
     }
   }
 
-  // Abrir modal para mostrar los datos ingresados
   openModal() {
     this.showModal = true;
   }
 
-  // Cerrar modal
   closeModal() {
     this.showModal = false;
   }
