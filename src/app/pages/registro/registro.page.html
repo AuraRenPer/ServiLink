@@ -5,61 +5,92 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-grid>
-    <ion-row class="ion-justify-content-center">
-      <ion-col size="12" size-md="6">
-          <form #registroForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
-        
-            <!-- Email -->
-            <ion-item>
-              <ion-label position="floating">Email</ion-label>
-              <ion-input type="email" name="email" [(ngModel)]="email" required email (ionInput)="validateInputs()"></ion-input>
-            </ion-item>
-            <p *ngIf="emailError" class="error-message">Ingrese un correo válido.</p>
-        
-            <!-- Full Name -->
-            <ion-item>
-              <ion-label position="floating">Full Name</ion-label>
-              <ion-input type="text" name="fullname" [(ngModel)]="fullname" required (ionInput)="validateInputs()"></ion-input>
-            </ion-item>
-        
-            <!-- Username -->
-            <ion-item>
-              <ion-label position="floating">Username</ion-label>
-              <ion-input type="text" name="username" [(ngModel)]="username" required (ionInput)="validateInputs()"></ion-input>
-            </ion-item>
-            <p *ngIf="usernameError" class="error-message">El nombre de usuario no puede contener espacios.</p>
-        
-            <!-- Password -->
-            <ion-item>
-              <ion-label position="floating">Password</ion-label>
-              <ion-input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6" (ionInput)="validateInputs()"></ion-input>
-              <ion-icon name="{{ showPassword ? 'eye-off' : 'eye' }}" slot="end" (click)="togglePasswordVisibility()"></ion-icon>
-            </ion-item>
-            <p *ngIf="passwordError" class="error-message">La contraseña debe tener al menos 6 caracteres y no contener espacios.</p>
-        
-            <!-- Confirm Password -->
-            <ion-item>
-              <ion-label position="floating">Confirm Password</ion-label>
-              <ion-input [type]="showPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6" (ionInput)="validateInputs()"></ion-input>
-            </ion-item>
-            <p *ngIf="passwordMismatch" class="error-message">Las contraseñas no coinciden.</p>
-        
-            <!-- Birth Date -->
-            <ion-item>
-              <ion-label position="floating">Birth Date</ion-label>
-              <ion-input type="date" name="birthDate" [(ngModel)]="birthDate" required (ionInput)="validateInputs()"></ion-input>
-            </ion-item>
-            <p *ngIf="birthDateError" class="error-message">Seleccione una fecha de nacimiento.</p>
-        
-            <!-- Botón de Registro -->
-            <ion-button expand="full" type="submit" [disabled]="!isValid">
-              Registrarse
-            </ion-button>
-        
-          </form>     
-        
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Registro</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Email -->
+        <ion-item>
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input type="email" formControlName="email" required></ion-input>
+        </ion-item>
+        <p *ngIf="registroForm.controls['email'].invalid && registroForm.controls['email'].touched"
+          class="error-message">
+          <ion-icon name="alert-circle-outline"></ion-icon> Ingrese un correo válido.
+        </p>
+
+        <!-- Full Name -->
+        <ion-item>
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label position="floating">Full Name</ion-label>
+          <ion-input type="text" formControlName="fullname" required (ionInput)="convertToUppercase()"></ion-input>
+        </ion-item>
+
+
+        <!-- Username -->
+        <ion-item>
+          <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+          <ion-label position="floating">Username</ion-label>
+          <ion-input type="text" formControlName="username" required></ion-input>
+        </ion-item>
+        <p *ngIf="registroForm.controls['username'].invalid && registroForm.controls['username'].touched"
+          class="error-message">
+          <ion-icon name="alert-circle-outline"></ion-icon> No puede contener espacios.
+        </p>
+
+        <!-- Password -->
+        <ion-item>
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-label position="floating">Password</ion-label>
+          <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" required></ion-input>
+          <ion-icon name="{{ showPassword ? 'eye-off' : 'eye' }}" slot="end"
+            (click)="togglePasswordVisibility()"></ion-icon>
+        </ion-item>
+        <p *ngIf="registroForm.controls['password'].invalid && registroForm.controls['password'].touched"
+          class="error-message">
+          <ion-icon name="alert-circle-outline"></ion-icon> La contraseña debe tener al menos 6 caracteres y no contener
+          espacios.
+        </p>
+
+        <!-- Confirm Password -->
+        <ion-item>
+          <ion-icon name="lock-open-outline" slot="start"></ion-icon>
+          <ion-label position="floating">Confirm Password</ion-label>
+          <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" required></ion-input>
+        </ion-item>
+        <p *ngIf="passwordsDoNotMatch" class="error-message">
+          <ion-icon name="alert-circle-outline"></ion-icon> Las contraseñas no coinciden.
+        </p>
+
+
+        <!-- Birth Date -->
+        <ion-item>
+          <ion-icon name="calendar-outline" slot="start"></ion-icon>
+          <ion-label position="floating">Birth Date</ion-label>
+          <ion-input type="date" formControlName="birthDate" required></ion-input>
+        </ion-item>
+        <p *ngIf="registroForm.controls['birthDate'].invalid && registroForm.controls['birthDate'].touched"
+          class="error-message">
+          <ion-icon name="alert-circle-outline"></ion-icon> Seleccione una fecha.
+        </p>
+
+        <!-- Botón de Registro -->
+        <ion-button expand="full" type="submit" [disabled]="registroForm.invalid" color="primary">
+          <ion-icon name="checkmark-outline" slot="start"></ion-icon> Registrarse
+        </ion-button>
+
+
+        <!-- Link para Iniciar Sesión -->
+        <p class="login-link ion-text-center">
+          ¿Ya tienes cuenta? <a (click)="goToLogin()" class="link-style">Inicia sesión aquí</a>
+        </p>
+
+      </form>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

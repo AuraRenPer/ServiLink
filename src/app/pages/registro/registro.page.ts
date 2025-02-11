@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-registro',
@@ -8,69 +11,78 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./registro.page.scss'],
 })
 export class RegistroPage {
-  
-  fullname: string = '';
-  email: string = '';
-  username: string = '';
-  password: string = '';
-  confirmPassword: string = '';
-  birthDate: string = '';
+  registroForm: FormGroup;
   showPassword: boolean = false;
-  isValid: boolean = false;
 
-  emailError: boolean = false;
-  usernameError: boolean = false;
-  passwordError: boolean = false;
-  passwordMismatch: boolean = false;
-  birthDateError: boolean = false;
-  users: any[] = []; // Array donde se guardarán los usuarios registrados
+  constructor(private fb: FormBuilder, private alertCtrl: AlertController, private route: Router) {
+    this.registroForm = this.fb.group({
+      fullname: ['', [Validators.required]],
+      email: [
+        '',
+        [Validators.required, Validators.email, Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)]
+      ],
+      username: [
+        '',
+        [Validators.required, Validators.pattern(/^\S*$/)]
+      ],
+      password: [
+        '',
+        [Validators.required, Validators.minLength(6), Validators.pattern(/^\S*$/)]
+      ],
+      confirmPassword: [
+        '',
+        [Validators.required, Validators.minLength(6), Validators.pattern(/^\S*$/)]
+      ],
+      birthDate: ['', [Validators.required]]
+    }, { validators: this.passwordsMatch });
+  }
 
-  constructor(private alertCtrl: AlertController) {}
+  passwordsMatch(formGroup: AbstractControl): ValidationErrors | null {
+    const password = formGroup.get('password')?.value;
+    const confirmPassword = formGroup.get('confirmPassword')?.value;
+    return password && confirmPassword && password !== confirmPassword ? { passwordsMismatch: true } : null;
+  }
 
-  validateInputs() {
-    this.fullname = this.fullname.toUpperCase();
-    
-    this.emailError = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email);
-    this.usernameError = /\s/.test(this.username);
-    this.passwordError = this.password.length < 6 || /\s/.test(this.password);
-    this.passwordMismatch = this.password !== this.confirmPassword;
-    this.birthDateError = this.birthDate.trim().length === 0;
+  get passwordsDoNotMatch(): boolean {
+    return !!this.registroForm.hasError('passwordsMismatch') &&
+      !!this.registroForm.get('confirmPassword')?.touched;
+  }
 
-    // Validar si todo es correcto
-    this.isValid = !this.emailError && !this.usernameError && !this.passwordError && !this.passwordMismatch && !this.birthDateError;
+  convertToUppercase() {
+    const fullNameControl = this.registroForm.get('fullname');
+    if (fullNameControl) {
+      const currentValue = fullNameControl.value || '';
+      const upperValue = currentValue.toUpperCase();
+      if (currentValue !== upperValue) {
+        fullNameControl.setValue(upperValue, { emitEvent: false });
+      }
+    }
   }
 
   async onSubmit() {
-    if (!this.isValid) {
+    if (this.registroForm.invalid) {
       return;
     }
 
-    // Guardar usuario en el array
-    this.users.push({
-      fullname: this.fullname,
-      email: this.email,
-      username: this.username,
-      birthDate: this.birthDate
-    });
+    const formData = this.registroForm.value;
+    console.log("Usuario Registrado:", formData);
 
     const alert = await this.alertCtrl.create({
-      header: 'Registro Exitoso',
-      message: `Usuario registrado correctamente.`,
-      buttons: ['OK'],
+      header: 'Usuario Registrado',
+      message: `Usuario registrado con éxito`,
+      buttons: ['Entendido'],
     });
     await alert.present();
 
-    // Limpiar formulario
-    this.fullname = '';
-    this.email = '';
-    this.username = '';
-    this.password = '';
-    this.confirmPassword = '';
-    this.birthDate = '';
-    this.isValid = false;
+    this.registroForm.reset();
   }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
+
+  goToLogin() {
+    this.route.navigate(['/home']);
+  }
+  
 }

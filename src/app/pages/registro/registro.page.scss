@@ -1,0 +1,51 @@
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .error-message ion-icon {
+    margin-right: 4px;
+  }
+
+  /* Estilos generales */
+.registro-card {
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Campos de entrada */
+  .custom-item {
+    --background: #ffffff;
+    --border-radius: 10px;
+    --box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+  }
+  
+  /* Mensajes de error */
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .error-message ion-icon {
+    margin-right: 4px;
+  }
+  
+  /* Link para iniciar sesión */
+  .link-style {
+    color: #3880ff;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .link-style:hover {
+    color: #3171e0;
+  }
+  
+  
