@@ -41,7 +41,7 @@ export class HomePage {
     }
   }
 
-  anotherPage() {
+  goRegister() {
     this.route.navigate(['/registro']);
   }
 

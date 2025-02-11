@@ -1,64 +1,58 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Registrate</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title class="ion-text-center">🎉 ¡Regístrate Ahora! 🎉</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-card>
+  <ion-card class="registro-card">
     <ion-card-header>
-      <ion-card-title>Registro</ion-card-title>
+      <ion-card-title class="ion-text-center">Crea tu cuenta</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
       <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" novalidate>
 
         <!-- Email -->
-        <ion-item>
+        <ion-item class="custom-item">
           <ion-icon name="mail-outline" slot="start"></ion-icon>
           <ion-label position="floating">Email</ion-label>
           <ion-input type="email" formControlName="email" required></ion-input>
         </ion-item>
-        <p *ngIf="registroForm.controls['email'].invalid && registroForm.controls['email'].touched"
-          class="error-message">
+        <p *ngIf="registroForm.controls['email'].invalid && registroForm.controls['email'].touched" class="error-message">
           <ion-icon name="alert-circle-outline"></ion-icon> Ingrese un correo válido.
         </p>
 
         <!-- Full Name -->
-        <ion-item>
+        <ion-item class="custom-item">
           <ion-icon name="person-outline" slot="start"></ion-icon>
           <ion-label position="floating">Full Name</ion-label>
           <ion-input type="text" formControlName="fullname" required (ionInput)="convertToUppercase()"></ion-input>
         </ion-item>
 
-
         <!-- Username -->
-        <ion-item>
+        <ion-item class="custom-item">
           <ion-icon name="person-circle-outline" slot="start"></ion-icon>
           <ion-label position="floating">Username</ion-label>
           <ion-input type="text" formControlName="username" required></ion-input>
         </ion-item>
-        <p *ngIf="registroForm.controls['username'].invalid && registroForm.controls['username'].touched"
-          class="error-message">
+        <p *ngIf="registroForm.controls['username'].invalid && registroForm.controls['username'].touched" class="error-message">
           <ion-icon name="alert-circle-outline"></ion-icon> No puede contener espacios.
         </p>
 
         <!-- Password -->
-        <ion-item>
+        <ion-item class="custom-item">
           <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
           <ion-label position="floating">Password</ion-label>
           <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" required></ion-input>
-          <ion-icon name="{{ showPassword ? 'eye-off' : 'eye' }}" slot="end"
-            (click)="togglePasswordVisibility()"></ion-icon>
+          <ion-icon name="{{ showPassword ? 'eye-off' : 'eye' }}" slot="end" (click)="togglePasswordVisibility()"></ion-icon>
         </ion-item>
-        <p *ngIf="registroForm.controls['password'].invalid && registroForm.controls['password'].touched"
-          class="error-message">
-          <ion-icon name="alert-circle-outline"></ion-icon> La contraseña debe tener al menos 6 caracteres y no contener
-          espacios.
+        <p *ngIf="registroForm.controls['password'].invalid && registroForm.controls['password'].touched" class="error-message">
+          <ion-icon name="alert-circle-outline"></ion-icon> La contraseña debe tener al menos 6 caracteres.
         </p>
 
         <!-- Confirm Password -->
-        <ion-item>
+        <ion-item class="custom-item">
           <ion-icon name="lock-open-outline" slot="start"></ion-icon>
           <ion-label position="floating">Confirm Password</ion-label>
           <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" required></ion-input>
@@ -67,23 +61,21 @@
           <ion-icon name="alert-circle-outline"></ion-icon> Las contraseñas no coinciden.
         </p>
 
-
         <!-- Birth Date -->
-        <ion-item>
+        <ion-item class="custom-item">
           <ion-icon name="calendar-outline" slot="start"></ion-icon>
           <ion-label position="floating">Birth Date</ion-label>
           <ion-input type="date" formControlName="birthDate" required></ion-input>
         </ion-item>
-        <p *ngIf="registroForm.controls['birthDate'].invalid && registroForm.controls['birthDate'].touched"
-          class="error-message">
+        <p *ngIf="registroForm.controls['birthDate'].invalid && registroForm.controls['birthDate'].touched" class="error-message">
           <ion-icon name="alert-circle-outline"></ion-icon> Seleccione una fecha.
         </p>
 
         <!-- Botón de Registro -->
-        <ion-button expand="full" type="submit" [disabled]="registroForm.invalid" color="primary">
+        <ion-button expand="full" type="submit" [disabled]="registroForm.invalid" color="success" class="ion-button-rounded">
           <ion-icon name="checkmark-outline" slot="start"></ion-icon> Registrarse
         </ion-button>
-
+       
 
         <!-- Link para Iniciar Sesión -->
         <p class="login-link ion-text-center">

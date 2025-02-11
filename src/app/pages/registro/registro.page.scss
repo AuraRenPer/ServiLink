@@ -1,51 +1,65 @@
-.error-message {
-    color: red;
-    font-size: 14px;
-    margin-left: 8px;
-    display: flex;
-    align-items: center;
-  }
   
-  .error-message ion-icon {
-    margin-right: 4px;
+  .registro-card {
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   }
 
-  /* Estilos generales */
-.registro-card {
-    border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  }
   
-  /* Campos de entrada */
   .custom-item {
-    --background: #ffffff;
-    --border-radius: 10px;
-    --box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
+      --padding-start: 10px;
+      --align-items: center;
+      display: flex;
+      align-items: center;
   }
+
   
-  /* Mensajes de error */
+  .custom-item ion-icon {
+      font-size: 22px;
+      
+      margin-right: 10px;
+      
+      align-self: center;
+      
+  }
+
+
   .error-message {
-    color: red;
+    background: var(--ion-item-background, #ffffff); 
+    padding: 5px 10px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); 
+    border: 1px solid var(--ion-color-danger, red); 
+    color: var(--ion-color-danger, red);
     font-size: 14px;
-    margin-left: 10px;
     display: flex;
     align-items: center;
+    margin-top: 4px;
   }
   
+
   .error-message ion-icon {
-    margin-right: 4px;
+      margin-right: 4px;
   }
+
   
-  /* Link para iniciar sesión */
   .link-style {
-    color: #3880ff;
-    text-decoration: underline;
-    cursor: pointer;
+      color: #3880ff;
+      text-decoration: underline;
+      cursor: pointer;
   }
-  
+
   .link-style:hover {
-    color: #3171e0;
+      color: #3171e0;
   }
+
   
+.ion-button-rounded {
+    --border-radius: 25px; 
+    --padding-start: 15px; 
+    --padding-end: 15px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    font-size: 16px;
+    font-weight: bold;
+  }
   
