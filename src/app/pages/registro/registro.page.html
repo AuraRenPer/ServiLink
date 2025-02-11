@@ -1,0 +1,65 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Registrate</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+          <form #registroForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+        
+            <!-- Email -->
+            <ion-item>
+              <ion-label position="floating">Email</ion-label>
+              <ion-input type="email" name="email" [(ngModel)]="email" required email (ionInput)="validateInputs()"></ion-input>
+            </ion-item>
+            <p *ngIf="emailError" class="error-message">Ingrese un correo válido.</p>
+        
+            <!-- Full Name -->
+            <ion-item>
+              <ion-label position="floating">Full Name</ion-label>
+              <ion-input type="text" name="fullname" [(ngModel)]="fullname" required (ionInput)="validateInputs()"></ion-input>
+            </ion-item>
+        
+            <!-- Username -->
+            <ion-item>
+              <ion-label position="floating">Username</ion-label>
+              <ion-input type="text" name="username" [(ngModel)]="username" required (ionInput)="validateInputs()"></ion-input>
+            </ion-item>
+            <p *ngIf="usernameError" class="error-message">El nombre de usuario no puede contener espacios.</p>
+        
+            <!-- Password -->
+            <ion-item>
+              <ion-label position="floating">Password</ion-label>
+              <ion-input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" required minlength="6" (ionInput)="validateInputs()"></ion-input>
+              <ion-icon name="{{ showPassword ? 'eye-off' : 'eye' }}" slot="end" (click)="togglePasswordVisibility()"></ion-icon>
+            </ion-item>
+            <p *ngIf="passwordError" class="error-message">La contraseña debe tener al menos 6 caracteres y no contener espacios.</p>
+        
+            <!-- Confirm Password -->
+            <ion-item>
+              <ion-label position="floating">Confirm Password</ion-label>
+              <ion-input [type]="showPassword ? 'text' : 'password'" name="confirmPassword" [(ngModel)]="confirmPassword" required minlength="6" (ionInput)="validateInputs()"></ion-input>
+            </ion-item>
+            <p *ngIf="passwordMismatch" class="error-message">Las contraseñas no coinciden.</p>
+        
+            <!-- Birth Date -->
+            <ion-item>
+              <ion-label position="floating">Birth Date</ion-label>
+              <ion-input type="date" name="birthDate" [(ngModel)]="birthDate" required (ionInput)="validateInputs()"></ion-input>
+            </ion-item>
+            <p *ngIf="birthDateError" class="error-message">Seleccione una fecha de nacimiento.</p>
+        
+            <!-- Botón de Registro -->
+            <ion-button expand="full" type="submit" [disabled]="!isValid">
+              Registrarse
+            </ion-button>
+        
+          </form>     
+        
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 
 @Component({
@@ -13,10 +14,10 @@ export class HomePage {
   isValid: boolean = false;
   showModal: boolean = false;
 
-  constructor(private alertCtrl: AlertController) {}
+  constructor(private alertCtrl: AlertController, private route: Router) { }
 
   validateInputs() {
-    this.username = this.username.toLowerCase(); 
+    this.username = this.username.toLowerCase();
     const usernameValid = this.username.trim().length > 0 && !/\s/.test(this.username);
     const passwordValid = this.password.trim().length > 0 && !/\s/.test(this.password);
     this.isValid = usernameValid && passwordValid;
@@ -38,6 +39,10 @@ export class HomePage {
       });
       await alert.present();
     }
+  }
+
+  anotherPage() {
+    this.route.navigate(['/registro']);
   }
 
   openModal() {
