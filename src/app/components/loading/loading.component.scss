@@ -1,25 +1,74 @@
 .loading-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: white;
-  }
-  
-  .center-content {
-    text-align: center;
-  }
-  
-  .logo {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 20px;
-  }
-  
-  ion-spinner {
-    width: 50px;  
-    height: 50px;
-    color: #4CAF50; 
-  }
-  
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centra verticalmente */
+  align-items: center; /* Centra horizontalmente */
+  height: 100vh; /* Ocupa toda la pantalla */
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Fondo oscuro degradado */
+  color: white;
+  position: relative;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* 🎡 Logo */
+.logo {
+  width: 500px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+/* 🎡 Estilos personalizados para el Spinner */
+.custom-spinner {
+  --color: #4CAF50; /* Color verde para el spinner */
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 🎭 Sombreado Blanco antes de Redirigir */
+.fade-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 1s ease-in-out;
+  pointer-events: none;
+}
+
+.fade-overlay.active {
+  opacity: 1; /* Hace visible el fondo blanco */
+}
+
+/* 🎭 Logo que reaparece en el fade-out */
+.fade-overlay img {
+  width: 200px;
+  height: auto;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.fade-overlay.active img {
+  opacity: 1; /* Logo reaparece gradualmente */
+}

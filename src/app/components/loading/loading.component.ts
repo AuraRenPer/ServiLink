@@ -8,14 +8,20 @@ import { Router } from '@angular/router';
   styleUrls: ['./loading.component.scss'],
 })
 export class LoadingComponent  implements OnInit {
-  @Input() nextRoute: string = '/login'; // esta es la ruta indicada
-
-  constructor(private router: Router) { }
+  fadeOut = false; // Controla el sombreado
+  @Input() nextRoute: string = '/login';
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    setTimeout(() => {
-      this.router.navigate([this.nextRoute]); // Redirige a la ruta indicada
-    }, 3000);
+    this.startLoading();
   }
 
+  startLoading() {
+    setTimeout(() => {
+      this.fadeOut = true; // Activa el sombreado
+      setTimeout(() => {
+        this.router.navigate(['/login']); // Redirige después del sombreado
+      }, 1000); // Se espera 1s para que termine la animación
+    }, 3000); // Se espera 3s antes de activar el sombreado
+  }
 }

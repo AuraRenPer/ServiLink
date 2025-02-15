@@ -1,8 +1,12 @@
 <ion-content class="loading-container">
     <div class="center-content">
-      <p>Iniciando sesión...</p>
-      
-      <ion-progress-bar [value]="progress"></ion-progress-bar>
+
+      <p>Espera un momento...</p>
+  
+      <!-- Barra de carga con gradiente -->
+      <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="progress * 100"></div>
+      </div>
     </div>
   </ion-content>
   

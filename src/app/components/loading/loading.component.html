@@ -1,6 +1,11 @@
 <ion-content class="loading-container">
   <div class="center-content">
-    <img src="assets/uteq_logo.png" alt="Logo" class="Logo">
-    <ion-spinner name="crescent"></ion-spinner>
+    <img src="assets/logos.png" alt="Logo" class="logo">
+    <ion-spinner class="custom-spinner" name="crescent"></ion-spinner>
+  </div>
+
+  <!-- Efecto de sombra blanca antes de la transición -->
+  <div class="fade-overlay" [class.active]="fadeOut">
+    <img src="assets/uteq_logo.png" alt="Logo">
   </div>
 </ion-content>
