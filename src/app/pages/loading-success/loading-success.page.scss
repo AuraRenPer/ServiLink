@@ -1,0 +1,33 @@
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrar verticalmente */
+    align-items: center; /* Centrar horizontalmente */
+    height: 100vh; /* Ocupar toda la pantalla */
+    background-color: white;
+  }
+  
+  .center-content {
+    text-align: center;
+  }
+  
+  .logo {
+    width: 150px;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+  ion-spinner {
+    width: 50px;
+    height: 50px;
+    color: #4CAF50;
+  }
+  
+  ion-progress-bar {
+    width: 80%;
+    margin-top: 20px;
+    height: 8px;
+    --progress-background: #e0e0e0;
+    --progress-bar-background: #4CAF50;
+  }
+  
