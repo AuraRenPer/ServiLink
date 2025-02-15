@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-
+// author: Pérez Ugalde Aura Renata
 @Component({
   selector: 'app-loading-inicial',
   standalone: false,

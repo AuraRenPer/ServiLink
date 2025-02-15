@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-
+//author: Pérez Ugalde Aura Renata
 @Component({
   selector: 'app-home',
   templateUrl: 'login.page.html',

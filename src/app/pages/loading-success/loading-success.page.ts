@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
+// author: Pérez Ugalde Aura Renata
 @Component({
   selector: 'app-loading-success',
   standalone: false,
