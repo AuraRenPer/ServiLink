@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./loading.component.scss'],
 })
 export class LoadingComponent  implements OnInit {
-  @Input() nextRoute: string = '/login'; // Ruta de destino, por defecto a login
+  @Input() nextRoute: string = '/login'; // esta es la ruta indicada
 
   constructor(private router: Router) { }
 
