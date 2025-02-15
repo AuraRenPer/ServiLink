@@ -4,8 +4,8 @@ import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  templateUrl: 'login.page.html',
+  styleUrls: ['login.page.scss'],
   standalone: false,
 })
 export class HomePage {
@@ -25,12 +25,7 @@ export class HomePage {
 
   async iniciarSesion() {
     if (this.isValid) {
-      const alert = await this.alertCtrl.create({
-        header: 'Inicio de sesión exitoso',
-        message: `Bienvenido, Username: ${this.username}, Password: ${this.password}`,
-        buttons: ['OK'],
-      });
-      await alert.present();
+      this.route.navigate(['/loading-success']);
     } else {
       const alert = await this.alertCtrl.create({
         header: 'Error',

@@ -1,6 +1,6 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Inicio de Sesión</ion-title>
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title class="ion-text-center">Inicia Sesión</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -22,7 +22,7 @@
 
         <!-- Botón Iniciar Sesión -->
         <ion-button expand="full" [disabled]="!isValid" (click)="iniciarSesion()">
-          Mostrar Información
+          Ingresar
         </ion-button>
       </ion-col>
     </ion-row>

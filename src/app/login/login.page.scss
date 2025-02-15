@@ -25,3 +25,13 @@
 #container a {
   text-decoration: none;
 }
+
+.link-style {
+  color: #3880ff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-style:hover {
+  color: #3171e0;
+}
