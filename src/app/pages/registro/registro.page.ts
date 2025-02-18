@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { AlertController } from '@ionic/angular';
+import { AlertController, NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 
 @Component({
@@ -14,7 +15,8 @@ export class RegistroPage {
   registroForm: FormGroup;
   showPassword: boolean = false;
 
-  constructor(private fb: FormBuilder, private alertCtrl: AlertController, private route: Router) {
+  constructor(private fb: FormBuilder, private alertCtrl: AlertController, private route: Router, private authService: AuthService,
+    private formBuilder: FormBuilder, private navCtrl: NavController) {
     this.registroForm = this.fb.group({
       fullname: ['', [Validators.required]],
       email: [
@@ -61,21 +63,26 @@ export class RegistroPage {
 
   async onSubmit() {
     if (this.registroForm.invalid) {
+      console.log('Formulario inválido');
       return;
     }
 
-    const formData = this.registroForm.value;
-    console.log("Usuario Registrado:", formData);
+    const { email, username, password, confirmPassword } = this.registroForm.value;
 
-    const alert = await this.alertCtrl.create({
-      header: 'Usuario Registrado',
-      message: `Usuario registrado con éxito`,
-      buttons: ['Entendido'],
-    });
-    await alert.present();
+    if (password !== confirmPassword) {
+      console.log('Las contraseñas no coinciden');
+      return;
+    }
 
-    this.registroForm.reset();
+    const result = await this.authService.registerUser(email, username, password);
+    if (result.success) {
+      console.log('Registro exitoso');
+      this.navCtrl.navigateRoot('/login'); // Redirigir a login
+    } else {
+      console.log('Error en registro:', result.message);
+    }
   }
+
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -84,5 +91,5 @@ export class RegistroPage {
   goToLogin() {
     this.route.navigate(['/home']);
   }
-  
+
 }
