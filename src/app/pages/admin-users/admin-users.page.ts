@@ -14,7 +14,7 @@ export class AdminUsersPage {
   activeTab = 'list'; // Tab por defecto
   users: any[] = [];
   newUser = { email: '', username: '', password: '' };
-  selectedUser: any;
+  selectedUser: any = null; // 🔹 Inicializado en `null` en lugar de `undefined`
 
   constructor(
     private firestore: Firestore,
@@ -65,7 +65,7 @@ export class AdminUsersPage {
 
   async updateUser() {
     if (!this.selectedUser) {
-      this.showToast('Selecciona un usuario para modificar.');
+      console.warn('No hay usuario seleccionado para modificar.');
       return;
     }
 
@@ -76,11 +76,10 @@ export class AdminUsersPage {
         email: this.selectedUser.email
       });
 
-      this.showToast('Usuario actualizado exitosamente.');
-      this.loadUsers(); // Refrescar la lista
+      console.log('Usuario actualizado exitosamente.');
+      this.loadUsers(); // Refrescar la lista de usuarios
     } catch (error) {
       console.error('Error al actualizar usuario:', error);
-      this.showToast('Error al actualizar usuario.');
     }
   }
 
