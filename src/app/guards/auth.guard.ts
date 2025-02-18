@@ -10,21 +10,23 @@ export class AuthGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const token = this.authService.getToken();
-
+  
     if (!token) {
       this.router.navigate(['/login']);
       return false;
     }
-
-    const tokenPayload = JSON.parse(atob(token)); // Decodificar el token
-
+  
+    const tokenPayload = JSON.parse(atob(token));
+  
+    // Desencriptar el role antes de verificar permisos
     const requiredRoles = route.data['roles'];
-
+  
     if (requiredRoles && !requiredRoles.includes(tokenPayload.role)) {
       this.router.navigate(['/home']);
       return false;
     }
-
+  
     return true;
   }
+ 
 }

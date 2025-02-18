@@ -82,44 +82,43 @@ export class AuthService {
   }
  
   
-
   async loginUser(email: string, password: string) {
     try {
-      // Iniciar sesión con Firebase Authentication
       const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
       const uid = userCredential.user.uid;
-
-      // Obtener datos del usuario desde Firestore
+  
       const userDocRef = doc(this.firestore, 'users', uid);
       const userDocSnap = await getDoc(userDocRef);
-
+  
       if (!userDocSnap.exists()) {
         throw new Error('Usuario no encontrado');
       }
-
+  
       const userData = userDocSnap.data();
-      const decryptedRole = decryptData(userData['role']);
-      const decryptedPermissions = userData['permissions'];
+  
+      // 🔹 Esperar a que se desencripte correctamente el role antes de guardarlo
+      const decryptedRole = await decryptData(userData['role']);
      
-
-      // Generar un token con rol y permisos
+        
+      // 🔹 Construir el token con el role ya desencriptado
       const tokenPayload = {
         uid: uid,
         email: email,
-        role: decryptedRole,
-        permissions: decryptedPermissions,
+        role: decryptedRole, // Ahora ya está desencriptado antes de guardarse
+        permissions: userData['permissions'],
         exp: Math.floor(Date.now() / 1000) + 3600 // Expira en 1 hora
       };
-      
+  
       const token = this.generateToken(tokenPayload);
       localStorage.setItem('authToken', token);
-
+  
       return { success: true, token };
     } catch (error) {
       console.error('Error en login:', error);
       return { success: false, message: (error as any).message };
     }
   }
+  
 
   logout() {
     signOut(this.auth);

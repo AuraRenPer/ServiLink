@@ -20,7 +20,7 @@
   </ion-button>
 
   <!-- Solo mostrar opciones de admin si el usuario tiene rol 'master' -->
-  <div *ngIf="user?.role === 'master'">
+  <div *ngIf="user?.role?.includes('master')">
     <h3>Panel de Administrador</h3>
     <ion-button expand="full" routerLink="/admin-users">
       Gestionar Usuarios
