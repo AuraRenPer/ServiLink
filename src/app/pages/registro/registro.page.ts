@@ -15,8 +15,7 @@ export class RegistroPage {
   registroForm: FormGroup;
   showPassword: boolean = false;
 
-  constructor(private fb: FormBuilder, private alertCtrl: AlertController, private route: Router, private authService: AuthService,
-    private formBuilder: FormBuilder, private navCtrl: NavController) {
+  constructor(private fb: FormBuilder, private alertCtrl: AlertController, private route: Router, private authService: AuthService, private navCtrl: NavController) {
     this.registroForm = this.fb.group({
       fullname: ['', [Validators.required]],
       email: [

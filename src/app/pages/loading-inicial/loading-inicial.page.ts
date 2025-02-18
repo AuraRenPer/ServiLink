@@ -7,5 +7,5 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./loading-inicial.page.scss'],
 })
 export class LoadingInicialPage {
-  @Input() nextRoute: string = '/login'; // Ruta de destino
+  @Input() nextRoute: string = '/prueba'; // Ruta de destino
 }

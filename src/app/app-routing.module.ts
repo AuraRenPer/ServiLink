@@ -35,7 +35,16 @@ const routes: Routes = [
   {
     path: 'loading-success',
     loadChildren: () => import('./pages/loading-success/loading-success.module').then( m => m.LoadingSuccessPageModule)
+  },
+  {
+    path: 'prueba',
+    loadChildren: () => import('./pages/prueba/prueba.module').then( m => m.PruebaPageModule)
+  },
+  {
+    path: 'prueba',
+    loadChildren: () => import('./pages/prueba/prueba.module').then(m => m.PruebaPageModule)
   }
+  
 ];
 
 @NgModule({
