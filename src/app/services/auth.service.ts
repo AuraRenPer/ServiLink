@@ -19,60 +19,69 @@ export class AuthService {
 
   async registerUser(email: string, username: string, password: string) {
     try {
-      // 1️⃣ Verificar si el correo ya está en uso en Firestore
+      // 🔹 1️⃣ Verificar si hay usuarios registrados en Firestore
       const usersRef = collection(this.firestore, 'users');
-      const existingUserQuery = query(usersRef, where('email', '==', email));
-      const existingUserSnapshot = await getDocs(existingUserQuery);
-
-      if (!existingUserSnapshot.empty) {
-        return { success: false, message: 'Este correo ya está registrado. Intenta iniciar sesión.' };
-      }
-
-      // 2️⃣ Crear el usuario en Firebase Authentication
+      const usersSnapshot = await getDocs(usersRef);
+      
+      let role = 'user'; // 🔹 Por defecto, los nuevos usuarios serán "user"
+  
+      if (usersSnapshot.empty) {
+        role = 'master'; // 🔹 Si no hay usuarios registrados, el primer usuario será "master"
+      } 
+  
+      // 🔹 2️⃣ Crear el usuario en Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
       const uid = userCredential.user.uid;
-
-      // 3️⃣ Obtener rol y permisos
+  
+      // 🔹 3️⃣ Obtener permisos del rol desde Firestore
       const rolesRef = collection(this.firestore, 'roles');
-      const q = query(rolesRef, where('role', '==', 'user'));
+      const q = query(rolesRef, where('role', '==', role));
       const querySnapshot = await getDocs(q);
-
-      let role = 'user';
+  
       let permissions: string[] = [];
-
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        role = data['role'];
-        permissions = data['permissions'];
-      });
-
-      // 4️⃣ Guardar usuario en Firestore
+  
+      if (!querySnapshot.empty) {
+        const data = querySnapshot.docs[0].data();
+        permissions = data['permissions'] ?? [];
+      }
+  
+      // 🔹 4️⃣ Cifrar la contraseña y el rol
+      const encryptedPassword = await encryptData(password);
+      const encryptedRole = await encryptData(role);
+  
+      // 🔹 5️⃣ Guardar usuario en Firestore
       await setDoc(doc(this.firestore, 'users', uid), {
         email,
         username,
-        password: await encryptData(password),  // ✅ Cifrar antes de guardar
-        role: await encryptData(role),  // ✅ Cifrar antes de guardar
+        password: encryptedPassword,  // ✅ Cifrado antes de guardar
+        role: encryptedRole,  // ✅ Cifrado antes de guardar
         permissions,
         last_login: new Date()
       });
-
+  
       return { success: true };
     } catch (error: unknown) {
       console.error('Error en registro:', error);
-
+  
       let errorMessage = 'Ocurrió un error desconocido';
-
+  
       if (error instanceof Error) {
         if (error.message.includes('auth/email-already-in-use')) {
           errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
+        } else if (error.message.includes('auth/weak-password')) {
+          errorMessage = 'La contraseña es demasiado débil. Intenta con una más segura.';
+        } else if (error.message.includes('auth/invalid-email')) {
+          errorMessage = 'El formato del correo no es válido.';
         } else {
           errorMessage = error.message;
         }
       }
-
+  
       return { success: false, message: errorMessage };
     }
   }
+ 
+  
 
   async loginUser(email: string, password: string) {
     try {
