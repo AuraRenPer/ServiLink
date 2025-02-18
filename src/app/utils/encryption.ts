@@ -1,13 +1,23 @@
-// @ts-ignore
-import crypto from 'crypto-browserify';
+export async function encryptData(data: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await window.crypto.subtle.generateKey(
+    { name: "AES-GCM", length: 256 },
+    true,
+    ["encrypt", "decrypt"]
+  );
 
-const SECRET_KEY = crypto.randomBytes(32); // 🔐 Clave de 32 bytes
-const IV = crypto.randomBytes(16); // 🔄 Vector de Inicialización (16 bytes)
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const encrypted = await window.crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    encoder.encode(data)
+  );
 
-export function encryptData(data: string): string {
-  const cipher = crypto.createCipheriv('aes-256-cbc', SECRET_KEY, IV);
-  let encrypted = cipher.update(data, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  
-  return `${IV.toString('hex')}:${encrypted}`; // Guardamos IV + mensaje cifrado
+  return `${arrayBufferToHex(iv)}:${arrayBufferToHex(encrypted)}`;
+}
+
+function arrayBufferToHex(buffer: ArrayBuffer): string {
+  return [...new Uint8Array(buffer)]
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
 }

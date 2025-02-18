@@ -39,12 +39,7 @@ const routes: Routes = [
   {
     path: 'prueba',
     loadChildren: () => import('./pages/prueba/prueba.module').then( m => m.PruebaPageModule)
-  },
-  {
-    path: 'prueba',
-    loadChildren: () => import('./pages/prueba/prueba.module').then(m => m.PruebaPageModule)
   }
-  
 ];
 
 @NgModule({
