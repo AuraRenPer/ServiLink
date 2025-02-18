@@ -1,13 +1,29 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>home</ion-title>
+    <ion-title>Inicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        Cerrar Sesión
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">home</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <h2>Bienvenido, {{ user?.username }}</h2>
+  <p>Tu rol: <strong>{{ user?.role }}</strong></p>
+
+  <!-- Botón para acceder a "View My Profile" (disponible para todos los usuarios) -->
+  <ion-button expand="full" routerLink="/profile">
+    Ver mi Perfil
+  </ion-button>
+
+  <!-- Solo mostrar opciones de admin si el usuario tiene rol 'master' -->
+  <div *ngIf="user?.role === 'master'">
+    <h3>Panel de Administrador</h3>
+    <ion-button expand="full" routerLink="/admin-users">
+      Gestionar Usuarios
+    </ion-button>
+  </div>
 </ion-content>

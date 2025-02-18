@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Admin Users</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-tabs>
+    <ion-tab tab="list">
+      <ion-content>
+        <ion-list>
+          <ion-item *ngFor="let user of users">
+            <ion-label>{{ user.username }} ({{ user.email }})</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-tab>
+
+    <ion-tab tab="add">
+      <ion-content>
+        <p>Formulario para agregar usuarios aquí...</p>
+      </ion-content>
+    </ion-tab>
+
+    <ion-tab tab="edit">
+      <ion-content>
+        <p>Formulario para editar usuarios aquí...</p>
+      </ion-content>
+    </ion-tab>
+  </ion-tabs>
+</ion-content>

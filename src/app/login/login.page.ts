@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service'; // Asegúrate de que el path sea correcto
+
 //author: Pérez Ugalde Aura Renata
 @Component({
   selector: 'app-home',
@@ -14,7 +16,13 @@ export class HomePage {
   isValid: boolean = false;
   showModal: boolean = false;
 
-  constructor(private alertCtrl: AlertController, private route: Router) { }
+  constructor(
+    private alertCtrl: AlertController,
+    private route: Router,
+    private authService: AuthService,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
+  ) { }
 
   validateInputs() {
     this.username = this.username.toLowerCase();
@@ -24,16 +32,42 @@ export class HomePage {
   }
 
   async iniciarSesion() {
-    if (this.isValid) {
-      this.route.navigate(['/loading-success']);
-    } else {
-      const alert = await this.alertCtrl.create({
-        header: 'Error',
-        message: 'Por favor, ingresa un usuario y contraseña válidos.',
-        buttons: ['OK'],
-      });
-      await alert.present();
+    if (!this.isValid) {
+      this.showToast('Por favor, ingresa un usuario y contraseña válidos.');
+      return;
     }
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Iniciando sesión...',
+      spinner: 'circles',
+    });
+
+    await loading.present();
+
+    try {
+      const result = await this.authService.loginUser(this.username, this.password);
+
+      if (result.success) {
+        this.showToast('Inicio de sesión exitoso.');
+        this.route.navigate(['/home']); // Redirigir a la página principal
+      } else {
+        this.showToast(result.message);
+      }
+    } catch (error) {
+      console.error('Error en login:', error);
+      this.showToast('Ocurrió un error inesperado.');
+    } finally {
+      loading.dismiss();
+    }
+  }
+
+  async showToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+    });
+    await toast.present();
   }
 
   goRegister() {

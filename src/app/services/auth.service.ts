@@ -1,8 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { Firestore, doc, setDoc, getDocs, collection, query, where } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, getDocs, getDoc, collection, query, where } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { encryptData } from '../utils/encryption';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { decryptData } from '../utils/encryption';
+import { signOut } from '@angular/fire/auth';
+
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +15,7 @@ export class AuthService {
   private auth = inject(Auth); // ✅ Se inyecta correctamente
   private firestore = inject(Firestore);
   private router = inject(Router);
+  private jwtHelper = inject(JwtHelperService);
 
   async registerUser(email: string, username: string, password: string) {
     try {
@@ -41,11 +46,12 @@ export class AuthService {
         permissions = data['permissions'];
       });
 
-      // 4️⃣ Guardar usuario en Firestore (sin contraseña)
+      // 4️⃣ Guardar usuario en Firestore
       await setDoc(doc(this.firestore, 'users', uid), {
         email,
         username,
-        role, // ⚠️ No es necesario encriptarlo, Firestore ya es seguro
+        password: await encryptData(password),  // ✅ Cifrar antes de guardar
+        role: await encryptData(role),  // ✅ Cifrar antes de guardar
         permissions,
         last_login: new Date()
       });
@@ -66,5 +72,62 @@ export class AuthService {
 
       return { success: false, message: errorMessage };
     }
+  }
+
+  async loginUser(email: string, password: string) {
+    try {
+      // Iniciar sesión con Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // Obtener datos del usuario desde Firestore
+      const userDocRef = doc(this.firestore, 'users', uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      const userData = userDocSnap.data();
+      const decryptedRole = decryptData(userData['role']);
+      const decryptedPermissions = userData['permissions'];
+     
+
+      // Generar un token con rol y permisos
+      const tokenPayload = {
+        uid: uid,
+        email: email,
+        role: decryptedRole,
+        permissions: decryptedPermissions,
+        exp: Math.floor(Date.now() / 1000) + 3600 // Expira en 1 hora
+      };
+      
+      const token = this.generateToken(tokenPayload);
+      localStorage.setItem('authToken', token);
+
+      return { success: true, token };
+    } catch (error) {
+      console.error('Error en login:', error);
+      return { success: false, message: (error as any).message };
+    }
+  }
+
+  logout() {
+    signOut(this.auth);
+    localStorage.removeItem('authToken');
+    this.router.navigate(['/login']);
+  }
+
+  getToken() {
+    return localStorage.getItem('authToken');
+  }
+
+  isAuthenticated(): boolean {
+    const token = this.getToken();
+    return token ? !this.jwtHelper.isTokenExpired(token) : false;
+  }
+
+  private generateToken(payload: any): string {
+    return btoa(JSON.stringify(payload)); // Codificar en Base64 (se recomienda usar JWT real en producción)
   }
 }

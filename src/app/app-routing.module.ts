@@ -1,6 +1,10 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 // author: Pérez Ugalde Aura Renata
+
+// Importar AuthGuard para proteger rutas
+import { AuthGuard } from './guards/auth.guard';
+
 const routes: Routes = [
   {
     path: 'loading-init',
@@ -28,17 +32,37 @@ const routes: Routes = [
     loadChildren: () => import('./pages/loading-success/loading-success.module').then(m => m.LoadingSuccessPageModule)
   },
   {
+    path: 'prueba',
+    loadChildren: () => import('./pages/prueba/prueba.module').then(m => m.PruebaPageModule)
+  },
+
+  // Nueva ruta protegida: "Admin Users" (solo para usuarios con todos los permisos)
+  {
+    path: 'admin-users',
+    loadChildren: () => import('./pages/admin-users/admin-users.module').then(m => m.AdminUsersPageModule),
+    canActivate: [AuthGuard],
+    data: { roles: ['master'] } // Solo accesible para "master"
+  },
+
+  // Nueva ruta protegida: "View My Profile" (Disponible para todos los usuarios autenticados)
+  {
+    path: 'profile',
+    loadChildren: () => import('./pages/profile/profile.module').then(m => m.ProfilePageModule),
+    canActivate: [AuthGuard]
+  },
+
+  {
     path: '**',
     redirectTo: 'loading-init',
     pathMatch: 'full'
   },
   {
-    path: 'loading-success',
-    loadChildren: () => import('./pages/loading-success/loading-success.module').then( m => m.LoadingSuccessPageModule)
+    path: 'admin-users',
+    loadChildren: () => import('./pages/admin-users/admin-users.module').then( m => m.AdminUsersPageModule)
   },
   {
-    path: 'prueba',
-    loadChildren: () => import('./pages/prueba/prueba.module').then( m => m.PruebaPageModule)
+    path: 'profile',
+    loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
   }
 ];
 
