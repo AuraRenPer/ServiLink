@@ -15,7 +15,6 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors }
 })
 export class AdminUsersPage {
   registroForm: FormGroup;
-  editUserForm: FormGroup;
   showPassword: boolean = false;
   activeTab = 'list'; // Tab por defecto
   users: any[] = [];
@@ -25,6 +24,7 @@ export class AdminUsersPage {
   roles: any[] = [];
   selectedPermissionsAdd: string[] = [];
   selectedPermissionsEdit: string[] = [];
+  editForm!: FormGroup;
 
   constructor(
     private firestore: Firestore,
@@ -55,11 +55,12 @@ export class AdminUsersPage {
         [Validators.required, Validators.minLength(6), Validators.pattern(/^\S*$/)]
       ],
       birthDate: ['', [Validators.required]],
-      role: ['', Validators.required],  
-      permissions: [[]]  
+      role: ['', Validators.required],
+      permissions: [[]]
     }, { validators: this.passwordsMatch });
 
-    this.editUserForm = this.fb.group({
+    this.editForm = this.fb.group({
+      selectedUser: ['', Validators.required],
       fullname: ['', [Validators.required]],
       email: [
         '',
@@ -69,18 +70,10 @@ export class AdminUsersPage {
         '',
         [Validators.required, Validators.pattern(/^\S*$/)]
       ],
-      password: [
-        '',
-        [Validators.required, Validators.minLength(6), Validators.pattern(/^\S*$/)]
-      ],
-      confirmPassword: [
-        '',
-        [Validators.required, Validators.minLength(6), Validators.pattern(/^\S*$/)]
-      ],
-      birthDate: ['', [Validators.required]],
-      role: ['', Validators.required], 
-      permissions: [[]]  
-    }, { validators: this.passwordsMatch });
+      role: ['', Validators.required], // Asegurar que el rol se actualiza bien
+      permissions: [[]] // Asegurar que los permisos siempre se asignan
+    });
+
   }
 
   passwordsMatch(formGroup: AbstractControl): ValidationErrors | null {
@@ -189,7 +182,7 @@ export class AdminUsersPage {
 
       this.showToast('Usuario agregado exitosamente.');
 
-      // 🔹 Limpiar el formulario después de agregar el usuario
+      // Se limpia el formulario después de agregar el usuario
       this.registroForm.reset();
       this.registroForm.markAsUntouched();
       this.loadUsers(); // Recargar la lista de usuarios
@@ -199,18 +192,33 @@ export class AdminUsersPage {
     }
   }
 
+  onUserSelect(event: any) {
+    const selectedUser = event.detail.value;
+    this.selectedUser = selectedUser; // Almacenar usuario seleccionado
+
+    this.editForm.patchValue({
+      email: selectedUser.email,
+      username: selectedUser.username,
+      role: selectedUser.role,
+      permissions: selectedUser.permissions || []
+    });
+
+    // Cargar permisos relacionados con el rol seleccionado
+    this.onRoleChange({ detail: { value: selectedUser.role } }, 'edit');
+  }
+
 
   async updateUser() {
-    if (this.editUserForm.invalid) {
+    if (this.editForm.invalid) {
       this.showToast('Por favor, complete todos los campos correctamente.');
       return;
     }
 
-    const { email, username, role, permissions } = this.editUserForm.value;
+    const { email, username, role, permissions } = this.editForm.value;
 
     try {
       const encryptedRole = await encryptData(role);
-  
+
       const userDoc = doc(this.firestore, 'users', this.selectedUser.id);
       await updateDoc(userDoc, {
         email,
@@ -218,9 +226,9 @@ export class AdminUsersPage {
         role: encryptedRole,
         permissions
       });
-  
+
       this.showToast('Usuario actualizado exitosamente.');
-      this.editUserForm.reset();
+      this.editForm.reset();
       this.loadUsers();
     } catch (error) {
       console.error('Error al actualizar usuario:', error);
@@ -230,7 +238,7 @@ export class AdminUsersPage {
 
   async populateEditForm() {
     if (this.selectedUser) {
-      this.editUserForm.setValue({
+      this.editForm.setValue({
         email: this.selectedUser.email,
         fullname: this.selectedUser.fullname || '',
         username: this.selectedUser.username,
@@ -243,10 +251,12 @@ export class AdminUsersPage {
     const toast = await this.toastCtrl.create({
       message,
       duration: 3000,
-      position: 'bottom'
+      position: 'bottom',
+      color: message.includes('❌') ? 'danger' : 'success'
     });
     await toast.present();
   }
+
 
   setActiveTab(tab: string) {
     this.activeTab = tab;
@@ -266,22 +276,22 @@ export class AdminUsersPage {
   async loadRoles() {
     const rolesCollection = collection(this.firestore, 'roles');
     const rolesSnapshot = await getDocs(rolesCollection);
-  
+
     this.roles = [];
-    
+
     for (const docSnap of rolesSnapshot.docs) {
       let roleData = docSnap.data();
-      
+
       // 🔹 Agregar roles con permisos a la lista
       this.roles.push({
-        role: roleData['role'], 
+        role: roleData['role'],
         permissions: roleData['permissions'] || []
       });
     }
-  
+
     console.log('Roles cargados:', this.roles); // 📌 Verificar que los roles se están cargando
   }
-  
+
 
   // Cargar permisos automáticamente según el rol seleccionado
   onRoleChange(event: any, formType: string) {
@@ -295,7 +305,7 @@ export class AdminUsersPage {
       this.registroForm.controls['permissions'].setValue(permissions);
     } else if (formType === 'edit') {
       this.selectedPermissionsEdit = permissions;
-      this.editUserForm.controls['permissions'].setValue(permissions);
+      this.editForm.controls['permissions'].setValue(permissions);
     }
   }
 
