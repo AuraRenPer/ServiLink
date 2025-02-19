@@ -60,8 +60,7 @@ export class AdminUsersPage {
     }, { validators: this.passwordsMatch });
 
     this.editForm = this.fb.group({
-      selectedUser: ['', Validators.required],
-      fullname: ['', [Validators.required]],
+      selectedUser: [null, Validators.required],  // 🔹 Asegurar que selectedUser esté inicializado
       email: [
         '',
         [Validators.required, Validators.email, Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)]
@@ -70,8 +69,8 @@ export class AdminUsersPage {
         '',
         [Validators.required, Validators.pattern(/^\S*$/)]
       ],
-      role: ['', Validators.required], // Asegurar que el rol se actualiza bien
-      permissions: [[]] // Asegurar que los permisos siempre se asignan
+      role: ['', Validators.required],
+      permissions: [[]]
     });
 
   }
@@ -194,18 +193,24 @@ export class AdminUsersPage {
 
   onUserSelect(event: any) {
     const selectedUser = event.detail.value;
-    this.selectedUser = selectedUser; // Almacenar usuario seleccionado
-
-    this.editForm.patchValue({
-      email: selectedUser.email,
-      username: selectedUser.username,
-      role: selectedUser.role,
-      permissions: selectedUser.permissions || []
-    });
-
-    // Cargar permisos relacionados con el rol seleccionado
-    this.onRoleChange({ detail: { value: selectedUser.role } }, 'edit');
+    this.selectedUser = selectedUser; // Asignar usuario seleccionado
+  
+    if (this.selectedUser) {
+      this.editForm.patchValue({
+        fullname: this.selectedUser.fullname,  
+        email: this.selectedUser.email,
+        username: this.selectedUser.username,
+        role: this.selectedUser.role,
+        permissions: this.selectedUser.permissions || []
+      });
+  
+      this.onRoleChange({ detail: { value: this.selectedUser.role } }, 'edit'); 
+    }
+  
+    this.editForm.updateValueAndValidity(); 
   }
+  
+  
 
 
   async updateUser() {
@@ -300,12 +305,20 @@ export class AdminUsersPage {
     const foundRole = this.roles.find(role => role.role === selectedRole);
     const permissions = foundRole ? foundRole.permissions : [];
 
-    if (formType === 'add') {
-      this.selectedPermissionsAdd = permissions;
-      this.registroForm.controls['permissions'].setValue(permissions);
-    } else if (formType === 'edit') {
+    if (formType === 'edit') {
       this.selectedPermissionsEdit = permissions;
-      this.editForm.controls['permissions'].setValue(permissions);
+      this.editForm.patchValue({
+        permissions,
+        role: selectedRole
+      });
+      this.editForm.updateValueAndValidity();  // 🔹 Forzar actualización del formulario
+    } else if (formType === 'add') {
+      this.selectedPermissionsAdd = permissions;
+      this.registroForm.patchValue({
+        permissions,
+        role: selectedRole
+      });
+      this.registroForm.updateValueAndValidity(); // 🔹 También forzar actualización en agregar usuario
     }
   }
 
