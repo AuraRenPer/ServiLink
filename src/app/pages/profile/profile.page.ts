@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -10,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
 export class ProfilePage {
   user: any;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private route: Router) {
     this.loadUserData();
   }
 
@@ -19,5 +20,9 @@ export class ProfilePage {
     if (token) {
       this.user = JSON.parse(atob(token));
     }
+  }
+
+  regresar(){
+    this.route.navigate(['/home']);
   }
 }

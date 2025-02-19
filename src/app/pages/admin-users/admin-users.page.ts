@@ -3,6 +3,7 @@ import { Firestore, collection, getDocs, setDoc, doc, updateDoc } from '@angular
 import { AuthService } from '../../services/auth.service';
 import { encryptData } from '../../utils/encryption';
 import { ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-users',
@@ -19,6 +20,7 @@ export class AdminUsersPage {
   constructor(
     private firestore: Firestore,
     private authService: AuthService,
+    private route: Router,
     private toastCtrl: ToastController
   ) {
     (window as any).encryptRoleForFirestore = this.encryptRoleForFirestore.bind(this);
@@ -97,8 +99,12 @@ export class AdminUsersPage {
   }
 
 
-async encryptRoleForFirestore() {
-  const encryptedRole = await encryptData('master');
-  console.log('Rol cifrado:', encryptedRole);
-}
+  async encryptRoleForFirestore() {
+    const encryptedRole = await encryptData('master');
+    console.log('Rol cifrado:', encryptedRole);
+  }
+
+  regresar() {
+    this.route.navigate(['/home']);
+  }
 }

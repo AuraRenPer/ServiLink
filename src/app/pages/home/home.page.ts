@@ -21,9 +21,9 @@ export class HomePage {
     if (token) {
       const decodedToken = JSON.parse(atob(token));
   
-      console.log('Token Decodificado antes de desencriptar:', decodedToken); // 📌 Verificar qué datos contiene
+      console.log('Token Decodificado antes de desencriptar:', decodedToken); 
   
-      // 🔹 Verificar si el role está cifrado antes de intentar desencriptarlo
+      //Verificar si el role está cifrado antes de intentar desencriptarlo
       if (typeof decodedToken.role === 'string' && decodedToken.role.includes(':')) {
         decodedToken.role = await decryptData(decodedToken.role);
       } else {
@@ -31,13 +31,13 @@ export class HomePage {
       }
   
       this.user = decodedToken;
-      console.log('Usuario Cargado después de desencriptar:', this.user); // 📌 Verificar que el role esté correcto después
+      console.log('Usuario Cargado después de desencriptar:', this.user); 
     }
   }
   
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/login']); // Redirigir al login después de cerrar sesión
+    this.router.navigate(['/login']); 
   }
 }
