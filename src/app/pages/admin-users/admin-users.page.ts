@@ -15,12 +15,16 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors }
 })
 export class AdminUsersPage {
   registroForm: FormGroup;
+  editUserForm: FormGroup;
   showPassword: boolean = false;
   activeTab = 'list'; // Tab por defecto
   users: any[] = [];
   newUser = { email: '', username: '', password: '' };
   selectedUser: any = null;
   currentUser: any = {};
+  roles: any[] = [];
+  selectedPermissionsAdd: string[] = [];
+  selectedPermissionsEdit: string[] = [];
 
   constructor(
     private firestore: Firestore,
@@ -31,6 +35,7 @@ export class AdminUsersPage {
     private navCtrl: NavController
   ) {
     (window as any).encryptRoleForFirestore = this.encryptRoleForFirestore.bind(this);
+    // form de registro
     this.registroForm = this.fb.group({
       fullname: ['', [Validators.required]],
       email: [
@@ -49,7 +54,32 @@ export class AdminUsersPage {
         '',
         [Validators.required, Validators.minLength(6), Validators.pattern(/^\S*$/)]
       ],
-      birthDate: ['', [Validators.required]]
+      birthDate: ['', [Validators.required]],
+      role: ['', Validators.required],  
+      permissions: [[]]  
+    }, { validators: this.passwordsMatch });
+
+    this.editUserForm = this.fb.group({
+      fullname: ['', [Validators.required]],
+      email: [
+        '',
+        [Validators.required, Validators.email, Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)]
+      ],
+      username: [
+        '',
+        [Validators.required, Validators.pattern(/^\S*$/)]
+      ],
+      password: [
+        '',
+        [Validators.required, Validators.minLength(6), Validators.pattern(/^\S*$/)]
+      ],
+      confirmPassword: [
+        '',
+        [Validators.required, Validators.minLength(6), Validators.pattern(/^\S*$/)]
+      ],
+      birthDate: ['', [Validators.required]],
+      role: ['', Validators.required], 
+      permissions: [[]]  
     }, { validators: this.passwordsMatch });
   }
 
@@ -82,6 +112,7 @@ export class AdminUsersPage {
 
   async ionViewWillEnter() {
     await this.loadUsers();
+    await this.loadRoles();
     this.loadCurrentUser();
   }
 
@@ -135,7 +166,7 @@ export class AdminUsersPage {
       return;
     }
 
-    const { email, username, password, confirmPassword } = this.registroForm.value;
+    const { email, username, password, confirmPassword, role, permissions } = this.registroForm.value;
 
     if (password !== confirmPassword) {
       this.showToast('Las contraseñas no coinciden.');
@@ -152,7 +183,7 @@ export class AdminUsersPage {
         username,
         password: encryptedPassword,
         role: encryptedRole,
-        permissions: [],
+        permissions,
         last_login: new Date()
       });
 
@@ -170,27 +201,43 @@ export class AdminUsersPage {
 
 
   async updateUser() {
-    if (!this.selectedUser) {
-      this.showToast('Selecciona un usuario para modificar.');
+    if (this.editUserForm.invalid) {
+      this.showToast('Por favor, complete todos los campos correctamente.');
       return;
     }
 
+    const { email, username, role, permissions } = this.editUserForm.value;
+
     try {
+      const encryptedRole = await encryptData(role);
+  
       const userDoc = doc(this.firestore, 'users', this.selectedUser.id);
       await updateDoc(userDoc, {
-        username: this.selectedUser.username,
-        email: this.selectedUser.email
+        email,
+        username,
+        role: encryptedRole,
+        permissions
       });
-
+  
       this.showToast('Usuario actualizado exitosamente.');
-      this.selectedUser = null; // 🔹 Limpiar el formulario de modificación
-      await this.loadUsers(); // 🔹 Recargar la lista de usuarios
+      this.editUserForm.reset();
+      this.loadUsers();
     } catch (error) {
       console.error('Error al actualizar usuario:', error);
       this.showToast('Error al actualizar usuario.');
     }
   }
 
+  async populateEditForm() {
+    if (this.selectedUser) {
+      this.editUserForm.setValue({
+        email: this.selectedUser.email,
+        fullname: this.selectedUser.fullname || '',
+        username: this.selectedUser.username,
+        birthDate: this.selectedUser.birthDate || ''
+      });
+    }
+  }
 
   async showToast(message: string) {
     const toast = await this.toastCtrl.create({
@@ -214,4 +261,42 @@ export class AdminUsersPage {
   regresar() {
     this.route.navigate(['/home']);
   }
+
+  // Roles
+  async loadRoles() {
+    const rolesCollection = collection(this.firestore, 'roles');
+    const rolesSnapshot = await getDocs(rolesCollection);
+  
+    this.roles = [];
+    
+    for (const docSnap of rolesSnapshot.docs) {
+      let roleData = docSnap.data();
+      
+      // 🔹 Agregar roles con permisos a la lista
+      this.roles.push({
+        role: roleData['role'], 
+        permissions: roleData['permissions'] || []
+      });
+    }
+  
+    console.log('Roles cargados:', this.roles); // 📌 Verificar que los roles se están cargando
+  }
+  
+
+  // Cargar permisos automáticamente según el rol seleccionado
+  onRoleChange(event: any, formType: string) {
+    const selectedRole = event.detail.value;
+
+    const foundRole = this.roles.find(role => role.role === selectedRole);
+    const permissions = foundRole ? foundRole.permissions : [];
+
+    if (formType === 'add') {
+      this.selectedPermissionsAdd = permissions;
+      this.registroForm.controls['permissions'].setValue(permissions);
+    } else if (formType === 'edit') {
+      this.selectedPermissionsEdit = permissions;
+      this.editUserForm.controls['permissions'].setValue(permissions);
+    }
+  }
+
 }

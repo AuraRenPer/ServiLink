@@ -96,6 +96,27 @@
             <ion-icon name="alert-circle-outline"></ion-icon> No puede contener espacios.
           </p>
 
+          <!-- Selección de Rol -->
+          <ion-item *ngIf="roles.length > 0" class="custom-item">
+            <ion-label>Seleccionar Rol</ion-label>
+            <ion-select formControlName="role" (ionChange)="onRoleChange($event, 'add')">
+              <ion-select-option *ngFor="let role of roles" [value]="role.role">
+                {{ role.role }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Selección de Permisos -->
+          <ion-item class="custom-item">
+            <ion-label>Permisos</ion-label>
+            <ion-select multiple="true" formControlName="permissions">
+              <ion-select-option *ngFor="let permission of selectedPermissionsAdd" [value]="permission">
+                {{ permission }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+
           <!-- Password -->
           <ion-item class="custom-item">
             <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
@@ -137,29 +158,80 @@
         <ion-card-title>Modificar Usuario</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
-          <ion-label position="floating">Seleccionar Usuario</ion-label>
-          <ion-select [(ngModel)]="selectedUser">
-            <ion-select-option *ngFor="let user of users" [value]="user">
-              {{ user.username }} ({{ user.email }})
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
 
-        <div *ngIf="selectedUser">
+        <form [formGroup]="editUserForm" (ngSubmit)="updateUser()">
+          <!-- Seleccionar Usuario -->
           <ion-item>
-            <ion-label position="floating">Nuevo Nombre de Usuario</ion-label>
-            <ion-input [(ngModel)]="selectedUser.username" type="text"></ion-input>
+            <ion-label position="floating">Seleccionar Usuario</ion-label>
+            <ion-select [(ngModel)]="selectedUser" (ionChange)="populateEditForm()">
+              <ion-select-option *ngFor="let user of users" [value]="user">
+                {{ user.username }} ({{ user.email }})
+              </ion-select-option>
+            </ion-select>
           </ion-item>
 
-          <ion-item>
-            <ion-label position="floating">Nuevo Email</ion-label>
-            <ion-input [(ngModel)]="selectedUser.email" type="email"></ion-input>
+          <!-- Email -->
+          <ion-item class="custom-item">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-label position="floating">Email</ion-label>
+            <ion-input type="email" formControlName="email"></ion-input>
+          </ion-item>
+          <p *ngIf="editUserForm.controls['email'].invalid && editUserForm.controls['email'].touched"
+            class="error-message">
+            <ion-icon name="alert-circle-outline"></ion-icon> Ingrese un correo válido.
+          </p>
+
+          <!-- Nombre Completo -->
+          <ion-item class="custom-item">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-label position="floating">Full Name</ion-label>
+            <ion-input type="text" formControlName="fullname" (ionInput)="convertToUppercase()"></ion-input>
           </ion-item>
 
-          <ion-button expand="full" (click)="updateUser()">Guardar Cambios</ion-button>
-        </div>
+          <!-- Username -->
+          <ion-item class="custom-item">
+            <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+            <ion-label position="floating">Username</ion-label>
+            <ion-input type="text" formControlName="username"></ion-input>
+          </ion-item>
+          <p *ngIf="editUserForm.controls['username'].invalid && editUserForm.controls['username'].touched"
+            class="error-message">
+            <ion-icon name="alert-circle-outline"></ion-icon> No puede contener espacios.
+          </p>
+
+          <!-- Selección de Rol -->
+          <ion-item>
+            <ion-label>Seleccionar Rol</ion-label>
+            <ion-select formControlName="role" (ionChange)="onRoleChange($event, 'edit')">
+              <ion-select-option *ngFor="let role of roles" [value]="role.role">
+                {{ role.role }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Selección de Permisos -->
+          <ion-item>
+            <ion-label>Permisos</ion-label>
+            <ion-select multiple="true" formControlName="permissions">
+              <ion-select-option *ngFor="let permission of selectedPermissionsEdit" [value]="permission">
+                {{ permission }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+
+          <!-- Birth Date -->
+          <ion-item class="custom-item">
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            <ion-label position="floating">Birth Date</ion-label>
+            <ion-input type="date" formControlName="birthDate"></ion-input>
+          </ion-item>
+
+          <ion-button expand="full" type="submit" [disabled]="editUserForm.invalid">Guardar Cambios</ion-button>
+        </form>
+
       </ion-card-content>
     </ion-card>
   </div>
+
 </ion-content>
