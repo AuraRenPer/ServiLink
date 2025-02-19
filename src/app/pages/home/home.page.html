@@ -1,8 +1,9 @@
+<!-- home.page.html -->
 <ion-header>
   <ion-toolbar>
     <ion-title>Inicio</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="logout()">
+      <ion-button (click)="logout()" color="danger">
         <ion-icon name="log-out-outline"></ion-icon>
         Cerrar Sesión
       </ion-button>
@@ -10,20 +11,32 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <h2>Bienvenido, {{ user?.username }}</h2>
-  <p>Tu rol: <strong>{{ user?.role }}</strong></p>
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Bienvenido, {{ user?.username }}</ion-card-title>
+      <ion-card-subtitle>Tu rol: <strong>{{ user?.role }}</strong></ion-card-subtitle>
+    </ion-card-header>
+    <ion-list>
+      <ion-item>
+        <ion-button expand="full" routerLink="/profile" color="primary">
+          Ver mi Perfil
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </ion-card>
 
-  <!-- Botón para acceder a "View My Profile" (disponible para todos los usuarios) -->
-  <ion-button expand="full" routerLink="/profile">
-    Ver mi Perfil
-  </ion-button>
 
-  <!-- Solo mostrar opciones de admin si el usuario tiene rol 'master' -->
   <div *ngIf="user?.role?.includes('master')">
-    <h3>Panel de Administrador</h3>
-    <ion-button expand="full" routerLink="/admin-users">
-      Gestionar Usuarios
-    </ion-button>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Panel de Administrador</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button expand="full" routerLink="/admin-users" color="warning">
+          Gestionar Usuarios
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>

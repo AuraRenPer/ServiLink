@@ -1,10 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { Firestore, doc, setDoc, getDocs, getDoc, collection, query, where } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, getDocs, getDoc, collection, query, where, Timestamp, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
-import { encryptData } from '../utils/encryption';
+import { encryptData, decryptData } from '../utils/encryption';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { decryptData } from '../utils/encryption';
 import { signOut } from '@angular/fire/auth';
 
 
@@ -96,14 +95,23 @@ export class AuthService {
 
       const userData = userDocSnap.data();
 
-      // Esperar a que se desencripte correctamente el role antes de guardarlo
+      // 🔹 Actualizar el campo `last_login` en Firestore con la fecha actual
+      const newLoginTimestamp = Timestamp.now();
+      await updateDoc(userDocRef, { last_login: newLoginTimestamp });
+
+      // 🔹 Desencriptar el role antes de guardarlo en el token
       const decryptedRole = await decryptData(userData['role']);
+
+      // 🔹 Convertir `last_login` a un formato de fecha legible antes de guardarlo en el token
+      const lastLoginFormatted = newLoginTimestamp.toDate().toLocaleString();
 
 
       // Construir el token con el role ya desencriptado
       const tokenPayload = {
         uid: uid,
         email: email,
+        username: userData['username'],
+        last_login: lastLoginFormatted,
         role: decryptedRole, // Ahora ya está desencriptado antes de guardarse
         permissions: userData['permissions'],
         exp: Math.floor(Date.now() / 1000) + 3600 // Expira en 1 hora

@@ -88,7 +88,7 @@ export class RegistroPage {
   }
 
   goToLogin() {
-    this.route.navigate(['/home']);
+    this.route.navigate(['/login']);
   }
 
 }
