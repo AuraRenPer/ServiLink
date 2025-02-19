@@ -1,4 +1,4 @@
-const SECRET_KEY_HEX = "a77304d85ef3e682bd95b4b25278944d870f8ab9cccd54310981525ddea76a3f"; 
+const SECRET_KEY_HEX = "a77304d85ef3e682bd95b4b25278944d870f8ab9cccd54310981525ddea76a3f";
 const SECRET_KEY = hexToUint8Array(SECRET_KEY_HEX);
 
 // Función para cifrar
@@ -26,7 +26,24 @@ export async function encryptData(data: string): Promise<string> {
 export async function decryptData(encryptedData: string): Promise<string> {
   return new Promise(async (resolve, reject) => {
     try {
+
+      // 🔹 Verificar si los datos ya están en texto plano y evitar desencriptar
+      if (!encryptedData || typeof encryptedData !== "string") {
+        console.error("Error: Valor inválido o vacío para desencriptar:", encryptedData);
+        reject("Datos inválidos para desencriptar.");
+        return;
+      }
+
+      if (!encryptedData.includes(":")) {
+        /* Ya se envian desencriptados por ello se comenta esa linea  
+        console.warn("Advertencia: Los datos no están cifrados, se devuelven tal cual:", encryptedData);
+            */
+        resolve(encryptedData);
+        return;
+      }
+
       const [ivHex, encryptedHex] = encryptedData.split(":");
+
       const iv = hexToUint8Array(ivHex);
       const encrypted = hexToUint8Array(encryptedHex);
 
@@ -52,6 +69,7 @@ export async function decryptData(encryptedData: string): Promise<string> {
   });
 }
 
+
 // Convertir ArrayBuffer a Hex
 function arrayBufferToHex(buffer: ArrayBuffer): string {
   return [...new Uint8Array(buffer)]
@@ -61,5 +79,17 @@ function arrayBufferToHex(buffer: ArrayBuffer): string {
 
 // Convertir Hex a Uint8Array
 function hexToUint8Array(hex: string): Uint8Array {
-  return new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+  if (!hex || typeof hex !== 'string') {
+    console.error('Error: hex no es una cadena válida:', hex);
+    return new Uint8Array(); // Retorna un Uint8Array vacío en caso de error
+  }
+
+  const matchedHex = hex.match(/.{1,2}/g);
+  if (!matchedHex) {
+    console.error('Error: Formato de hex incorrecto:', hex);
+    return new Uint8Array();
+  }
+
+  return new Uint8Array(matchedHex.map(byte => parseInt(byte, 16)));
 }
+

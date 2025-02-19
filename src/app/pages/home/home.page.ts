@@ -12,8 +12,10 @@ import { decryptData } from '../../utils/encryption';
 export class HomePage {
   user: any = null;
 
-  constructor(private authService: AuthService, private router: Router) {
-    this.loadUserData();
+  constructor(private authService: AuthService, private router: Router) {}
+
+  async ionViewWillEnter() { // Se ejecuta cada vez que se entra en esta vista
+    await this.loadUserData();
   }
 
   async loadUserData() {
@@ -23,18 +25,18 @@ export class HomePage {
   
       console.log('Token Decodificado antes de desencriptar:', decodedToken); 
   
-      //Verificar si el role está cifrado antes de intentar desencriptarlo
-      if (typeof decodedToken.role === 'string' && decodedToken.role.includes(':')) {
-        decodedToken.role = await decryptData(decodedToken.role);
-      } else {
-        console.warn('El role no está cifrado o tiene un formato incorrecto:', decodedToken.role);
-      }
+      // Verificar si el role está cifrado antes de intentar desencriptarlo
+      this.user = decodedToken;
+      console.log('Usuario Cargado:', this.user);
+      
   
       this.user = decodedToken;
       console.log('Usuario Cargado después de desencriptar:', this.user); 
+    } else {
+      console.warn("No hay un token de autenticación almacenado.");
+      this.router.navigate(['/login']); // Redirigir a login si no hay token
     }
   }
-  
 
   logout() {
     this.authService.logout();

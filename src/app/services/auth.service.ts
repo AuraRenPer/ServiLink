@@ -95,30 +95,35 @@ export class AuthService {
 
       const userData = userDocSnap.data();
 
-      // 🔹 Actualizar el campo `last_login` en Firestore con la fecha actual
+      // Actualizar `last_login`
       const newLoginTimestamp = Timestamp.now();
       await updateDoc(userDocRef, { last_login: newLoginTimestamp });
 
-      // 🔹 Desencriptar el role antes de guardarlo en el token
+      // Desencriptar `role`
       const decryptedRole = await decryptData(userData['role']);
+      const permissions = userData['permissions'] || [];
 
-      // 🔹 Convertir `last_login` a un formato de fecha legible antes de guardarlo en el token
+      // Convertir `last_login` a formato legible
       const lastLoginFormatted = newLoginTimestamp.toDate().toLocaleString();
 
-
-      // Construir el token con el role ya desencriptado
+      // Construir el token antes de encriptarlo
       const tokenPayload = {
-        uid: uid,
-        email: email,
+        uid,
+        email,
         username: userData['username'],
         last_login: lastLoginFormatted,
-        role: decryptedRole, // Ahora ya está desencriptado antes de guardarse
-        permissions: userData['permissions'],
+        role: decryptedRole, // ✅ Ya desencriptado
+        permissions,
         exp: Math.floor(Date.now() / 1000) + 3600 // Expira en 1 hora
       };
 
-      const token = this.generateToken(tokenPayload);
+      console.log("🔹 Token Antes de Encriptar:", tokenPayload); // 📌 Verificar en la consola
+
+      // Se encripta el token antes de guardarlo
+      const token = btoa(JSON.stringify(tokenPayload));
       localStorage.setItem('authToken', token);
+
+      console.log("🔹 Token Encriptado:", token); // 📌 Verificar token encriptado
 
       return { success: true, token };
     } catch (error) {
@@ -126,6 +131,7 @@ export class AuthService {
       return { success: false, message: (error as any).message };
     }
   }
+
 
 
   logout() {
@@ -143,7 +149,22 @@ export class AuthService {
     return token ? !this.jwtHelper.isTokenExpired(token) : false;
   }
 
-  private generateToken(payload: any): string {
-    return btoa(JSON.stringify(payload));
-  }
+  getCurrentUser() {
+    const token = localStorage.getItem('authToken');
+    if (!token) return null;
+
+    console.log("Token Encriptado Recuperado:", token); // 📌 Verificar en consola
+
+    try {
+        const decodedToken = JSON.parse(atob(token));
+
+        console.log("Token Desencriptado:", decodedToken); // 📌 Verificar en consola después de desencriptar
+
+        return decodedToken;
+    } catch (error) {
+        console.error("Error al decodificar el token:", error);
+        return null;
+    }
+}
+
 }
