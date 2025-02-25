@@ -117,13 +117,13 @@ export class AuthService {
         exp: Math.floor(Date.now() / 1000) + 3600 // Expira en 1 hora
       };
 
-      console.log("🔹 Token Antes de Encriptar:", tokenPayload); // 📌 Verificar en la consola
+      console.log("Token Antes de Encriptar:", tokenPayload); 
 
       // Se encripta el token antes de guardarlo
       const token = btoa(JSON.stringify(tokenPayload));
       localStorage.setItem('authToken', token);
 
-      console.log("🔹 Token Encriptado:", token); // 📌 Verificar token encriptado
+      console.log("Token Encriptado:", token); 
 
       return { success: true, token };
     } catch (error) {
