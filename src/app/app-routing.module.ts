@@ -31,10 +31,6 @@ const routes: Routes = [
     path: 'loading-success',
     loadChildren: () => import('./pages/loading-success/loading-success.module').then(m => m.LoadingSuccessPageModule)
   },
-  {
-    path: 'prueba',
-    loadChildren: () => import('./pages/prueba/prueba.module').then(m => m.PruebaPageModule)
-  },
 
   // Nueva ruta protegida: "Admin Users" (solo para usuarios con todos los permisos)
   {
